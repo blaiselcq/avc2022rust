@@ -143,18 +143,16 @@ fn parse_hand_from_second_case(line: &str) -> Result<Hand, SimpleError> {
     Ok(Hand { us_move, them_move })
 }
 
-fn get_hands_from_file_first_case() -> Vec<Hand> {
-    let data = include_str!("strategy.txt");
-
-    data.lines()
+fn get_hands_from_input_first_case(input: &str) -> Vec<Hand> {
+    input
+        .lines()
         .map(|line| parse_hand_from_first_case(line).unwrap())
         .collect()
 }
 
-fn get_hands_from_file_second_case() -> Vec<Hand> {
-    let data = include_str!("strategy.txt");
-
-    data.lines()
+fn get_hands_from_input_second_case(input: &str) -> Vec<Hand> {
+    input
+        .lines()
         .map(|line| parse_hand_from_second_case(line).unwrap())
         .collect()
 }
@@ -163,15 +161,15 @@ fn get_scores(hands: &Vec<Hand>) -> Vec<u32> {
     hands.iter().map(|hand| hand.get_score()).collect()
 }
 
-pub fn puzzle_1() -> u32 {
-    let hands = get_hands_from_file_first_case();
+pub fn puzzle_1(input: &str) -> u32 {
+    let hands = get_hands_from_input_first_case(input);
     let scores = get_scores(&hands);
 
     scores.iter().sum()
 }
 
-pub fn puzzle_2() -> u32 {
-    let hands = get_hands_from_file_second_case();
+pub fn puzzle_2(input: &str) -> u32 {
+    let hands = get_hands_from_input_second_case(input);
     let scores = get_scores(&hands);
 
     scores.iter().sum()

@@ -1,8 +1,31 @@
 mod days;
 
+struct Day {
+    day: u8,
+    puzzle_1: fn(&str) -> u32,
+    puzzle_2: fn(&str) -> u32,
+}
+
+const DAYS: [Day; 2] = [
+    Day {
+        day: 1,
+        puzzle_1: days::day_01::puzzle_1,
+        puzzle_2: days::day_01::puzzle_2,
+    },
+    Day {
+        day: 2,
+        puzzle_1: days::day_02::puzzle_1,
+        puzzle_2: days::day_02::puzzle_2,
+    },
+];
+
 fn main() {
-    println!("Day 1 - Puzzle 1: {}", days::day_01::puzzle_1());
-    println!("Day 1 - Puzzle 2: {}", days::day_01::puzzle_2());
-    println!("Day 2 - Puzzle 1: {}", days::day_02::puzzle_1());
-    println!("Day 2 - Puzzle 2: {}", days::day_02::puzzle_2());
+    for day in DAYS {
+        let input_file_path = format!("./data/inputs/input{:02}.txt", day.day);
+        let input_file = std::fs::read_to_string(input_file_path).unwrap();
+        let puzzle_1 = (day.puzzle_1)(&input_file);
+        let puzzle_2 = (day.puzzle_2)(&input_file);
+        println!("Day {} - Puzzle 1: {}", day.day, puzzle_1);
+        println!("Day {} - Puzzle 2: {}", day.day, puzzle_2);
+    }
 }
