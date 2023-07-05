@@ -2,8 +2,8 @@ mod days;
 
 struct Day {
     day: u8,
-    puzzle_1: fn(&str) -> u32,
-    puzzle_2: fn(&str) -> u32,
+    puzzle_1: fn(&str) -> String,
+    puzzle_2: fn(&str) -> String,
 }
 
 const DAYS: [Day; 4] = [

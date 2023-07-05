@@ -18,17 +18,17 @@ fn get_total_calories_by_elf(calories: Vec<Vec<u32>>) -> Vec<u32> {
         .collect()
 }
 
-pub fn puzzle_1(input: &str) -> u32 {
+pub fn puzzle_1(input: &str) -> String {
     let calories = load_input_data(input);
     let total_calories = get_total_calories_by_elf(calories);
 
     match total_calories.iter().max() {
-        Some(max) => *max,
-        None => 0,
+        Some(max) => max.to_string(),
+        None => 0.to_string(),
     }
 }
 
-pub fn puzzle_2(input: &str) -> u32 {
+pub fn puzzle_2(input: &str) -> String {
     let calories = load_input_data(input);
     let mut total_calories = get_total_calories_by_elf(calories);
     assert!(total_calories.len() >= 3);
@@ -36,5 +36,5 @@ pub fn puzzle_2(input: &str) -> u32 {
     total_calories.sort();
 
     let top_three = &total_calories[total_calories.len() - 3..];
-    top_three.iter().sum()
+    top_three.iter().sum::<u32>().to_string()
 }

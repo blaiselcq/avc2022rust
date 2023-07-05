@@ -46,18 +46,18 @@ fn get_group_letters(input: &str) -> Vec<char> {
         .collect()
 }
 
-pub fn puzzle_1(input: &str) -> u32 {
+pub fn puzzle_1(input: &str) -> String {
     let shared_letters = get_shared_letters(input);
 
     let sum: usize = shared_letters.iter().map(|x| get_priorities(*x)).sum();
-    u32::try_from(sum).unwrap()
+    sum.to_string()
 }
 
-pub fn puzzle_2(input: &str) -> u32 {
+pub fn puzzle_2(input: &str) -> String {
     let group_letters = get_group_letters(input);
 
     let sum: usize = group_letters.iter().map(|x| get_priorities(*x)).sum();
-    u32::try_from(sum).unwrap()
+    sum.to_string()
 }
 
 #[cfg(test)]
@@ -95,7 +95,7 @@ mod tests {
         let input = get_input();
         let result = puzzle_1(&input);
 
-        assert_eq!(result, 157);
+        assert_eq!(result, "157");
     }
 
     #[test]
@@ -103,6 +103,6 @@ mod tests {
         let input = get_input();
         let result = puzzle_2(&input);
 
-        assert_eq!(result, 70);
+        assert_eq!(result, "70");
     }
 }

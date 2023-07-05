@@ -43,7 +43,7 @@ fn parse_pair(input: &str) -> (Job, Job) {
     (first, second)
 }
 
-pub fn puzzle_1(input: &str) -> u32 {
+pub fn puzzle_1(input: &str) -> String {
     input
         .split('\n')
         .filter(|x| !x.is_empty())
@@ -51,11 +51,10 @@ pub fn puzzle_1(input: &str) -> u32 {
         .map(|(pa, pb)| pa.includes(&pb) || pb.includes(&pa))
         .filter(|x| *x)
         .count()
-        .try_into()
-        .unwrap()
+        .to_string()
 }
 
-pub fn puzzle_2(input: &str) -> u32 {
+pub fn puzzle_2(input: &str) -> String {
     input
         .split('\n')
         .filter(|x| !x.is_empty())
@@ -63,8 +62,7 @@ pub fn puzzle_2(input: &str) -> u32 {
         .map(|(pa, pb)| pa.overlaps(&pb) || pb.overlaps(&pa))
         .filter(|x| *x)
         .count()
-        .try_into()
-        .unwrap()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -96,12 +94,12 @@ mod tests {
     #[test]
     fn test_puzzle_1() {
         let input = get_input();
-        assert_eq!(puzzle_1(&input), 2);
+        assert_eq!(puzzle_1(&input), "2");
     }
 
     #[test]
     fn test_puzzle_2() {
         let input = get_input();
-        assert_eq!(puzzle_2(&input), 4);
+        assert_eq!(puzzle_2(&input), "4");
     }
 }
