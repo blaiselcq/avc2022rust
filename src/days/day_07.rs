@@ -24,7 +24,7 @@ impl TryFrom<&str> for PathElement {
 }
 
 fn make_path(value: &str) -> Result<Path, ()> {
-    let splitted = value.split('\n').map(|s| PathElement::try_from(s));
+    let splitted = value.split('\n').map(PathElement::try_from);
     if splitted.clone().any(|e| e.is_err()) {
         return Err(());
     }
@@ -67,7 +67,7 @@ impl Dir {
     }
 
     fn get_total_size(&self) -> u32 {
-        (&self.children).into_iter().map(|d| d.get_size()).sum()
+        self.children.iter().map(|d| d.get_size()).sum()
     }
 }
 
@@ -180,7 +180,7 @@ impl DirCursor {
 
     fn handle_command_line(&mut self, line: &str) -> Result<(), ()> {
         self.is_ls = false;
-        match line.trim().split_whitespace().next() {
+        match line.split_whitespace().next() {
             None => Err(()),
             Some("ls") => {
                 self.is_ls = true;
@@ -205,9 +205,9 @@ impl DirCursor {
                     });
                     if is_file {
                         let size = size_or_dir.unwrap();
-                        Dir::add_child_file(&cursor, size, name);
+                        Dir::add_child_file(cursor, size, name);
                     } else {
-                        Dir::add_child_dir(&cursor, name);
+                        Dir::add_child_dir(cursor, name);
                     }
                     return Ok(());
                 }
@@ -232,11 +232,10 @@ fn parse_output(text: &str) -> DirCursor {
     let mut dir = DirCursor::create_empty();
     for line in text
         .split('\n')
-        .into_iter()
         .map(|l| l.trim())
         .filter(|l| !l.is_empty())
     {
-        let _ = dir.handle_line(line).unwrap();
+        dir.handle_line(line).unwrap();
     }
 
     dir
@@ -249,7 +248,7 @@ fn get_small_dir_recur(dir: &Rc<RefCell<Dir>>, result: &mut Vec<Rc<RefCell<Dir>>
     for child in &dir.borrow().children {
         match child {
             DirElement::File(_) => {}
-            DirElement::Dir(dir) => get_small_dir_recur(&dir, result, limit),
+            DirElement::Dir(dir) => get_small_dir_recur(dir, result, limit),
         }
     }
 }
@@ -259,7 +258,7 @@ fn get_all_dir_recur(dir: &Rc<RefCell<Dir>>, result: &mut Vec<Rc<RefCell<Dir>>>)
     for child in &dir.borrow().children {
         match child {
             DirElement::File(_) => {}
-            DirElement::Dir(dir) => get_all_dir_recur(&dir, result),
+            DirElement::Dir(dir) => get_all_dir_recur(dir, result),
         }
     }
 }

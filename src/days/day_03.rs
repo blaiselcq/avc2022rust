@@ -11,13 +11,13 @@ fn get_shared_letter(first: &str, second: &str) -> char {
     let char_set_second: HashSet<char> = HashSet::from_iter(second.chars());
 
     let mut inter = char_set_first.intersection(&char_set_second);
-    inter.next().unwrap().clone()
+    *inter.next().unwrap()
 }
 
 fn get_shared_letters(input: &str) -> Vec<char> {
     input
         .split('\n')
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty())
         .map(|letters| {
             let l = letters.len();
             let (first, second) = letters.split_at(l / 2);
@@ -39,7 +39,7 @@ fn get_group_shared_letter(chunk: &[&str]) -> Option<char> {
 fn get_group_letters(input: &str) -> Vec<char> {
     input
         .split('\n')
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty())
         .collect::<Vec<_>>()
         .chunks(3)
         .map(|chunk| get_group_shared_letter(chunk).unwrap())

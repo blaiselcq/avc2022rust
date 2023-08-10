@@ -40,16 +40,17 @@ fn parse_piles(input: &str) -> Piles {
         .collect();
 
     let crate_piles: Vec<_> = lines
-        .filter(|line| line.len() > 0)
+        .filter(|line| !line.is_empty())
         .map(|line| get_crates(line, pile_numbers.len()))
         .collect();
 
     let mut piles: Piles = vec![Vec::new(); pile_numbers.len()];
 
     crate_piles.into_iter().for_each(|crates| {
-        crates.into_iter().enumerate().for_each(|(i, c)| match c {
-            Some(_c) => piles[i].push(_c),
-            None => {}
+        crates.into_iter().enumerate().for_each(|(i, c)| {
+            if let Some(c) = c {
+                piles[i].push(c)
+            }
         })
     });
 
@@ -98,7 +99,7 @@ fn parse_input(input: &str) -> (Piles, Vec<Step>) {
 
 pub fn get_result(piles: &Piles) -> String {
     let mut result = String::new();
-    piles.into_iter().for_each(|pile| {
+    piles.iter().for_each(|pile| {
         if let Some(c) = pile.last() {
             result.push(*c);
         }

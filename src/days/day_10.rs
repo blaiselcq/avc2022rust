@@ -14,7 +14,7 @@ enum Instruction {
     Addx(i32),
 }
 
-struct CPU {
+struct Cpu {
     counter: usize,
     register_x: i32,
 }
@@ -23,19 +23,19 @@ impl Instruction {
     fn parser(input: &str) -> IResult<&str, Instruction> {
         let (input, instruction) = alpha1(input)?;
         match instruction {
-            "noop" => return Ok((input, Instruction::Noop)),
+            "noop" => Ok((input, Instruction::Noop)),
             "addx" => {
                 let (input, (_, x)) = tuple((space1, nom::character::complete::i32))(input)?;
-                return Ok((input, Instruction::Addx(x)));
+                Ok((input, Instruction::Addx(x)))
             }
             other => IResult::Err(nom::Err::Failure(Error::new(other, ErrorKind::Switch))),
         }
     }
 }
 
-impl CPU {
+impl Cpu {
     fn new() -> Self {
-        CPU {
+        Cpu {
             counter: 0,
             register_x: 1,
         }
@@ -96,14 +96,12 @@ fn get_signal_strengths(start: usize, increment: usize, history: BTreeMap<usize,
     };
 
     let history = complete_history(history);
-    (&history[..history.len() - 1])
+    history[..history.len() - 1]
         .iter()
         .enumerate()
         .filter(|&(key, _)| increment_selector(key))
         .map(|(key, value)| ((key + 1) as i32, value))
-        .map(|(key, value)| {
-            return key * value;
-        })
+        .map(|(key, value)| key * value)
         .collect()
 }
 
@@ -145,7 +143,7 @@ pub fn puzzle_1(input: &str) -> String {
 
     let mut history = BTreeMap::new();
 
-    let mut cpu = CPU::new();
+    let mut cpu = Cpu::new();
     cpu.register_x = 1;
     history.insert(cpu.counter, cpu.register_x);
     instructions.iter().for_each(|&instruction| {
@@ -163,7 +161,7 @@ pub fn puzzle_2(input: &str) -> String {
 
     let mut history = BTreeMap::new();
 
-    let mut cpu = CPU::new();
+    let mut cpu = Cpu::new();
     history.insert(cpu.counter, cpu.register_x);
     instructions.iter().for_each(|&instruction| {
         cpu.execute(instruction);

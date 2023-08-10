@@ -48,7 +48,7 @@ impl Ord for Move {
 
 impl PartialOrd for Move {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(&other))
+        Some(self.cmp(other))
     }
 }
 
@@ -157,20 +157,20 @@ fn get_hands_from_input_second_case(input: &str) -> Vec<Hand> {
         .collect()
 }
 
-fn get_scores(hands: &Vec<Hand>) -> Vec<u32> {
+fn get_scores(hands: Vec<Hand>) -> Vec<u32> {
     hands.iter().map(|hand| hand.get_score()).collect()
 }
 
 pub fn puzzle_1(input: &str) -> String {
     let hands = get_hands_from_input_first_case(input);
-    let scores = get_scores(&hands);
+    let scores = get_scores(hands);
 
     scores.iter().sum::<u32>().to_string()
 }
 
 pub fn puzzle_2(input: &str) -> String {
     let hands = get_hands_from_input_second_case(input);
-    let scores = get_scores(&hands);
+    let scores = get_scores(hands);
 
     scores.iter().sum::<u32>().to_string()
 }

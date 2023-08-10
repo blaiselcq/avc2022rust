@@ -96,25 +96,23 @@ fn get_visibility_length(forest: &TreeGrid, side: Side, pos: Pos) -> usize {
     };
 
     match side {
-        Side::North => (&forest[borns.clone()])
+        Side::North => forest[borns.clone()]
             .iter()
             .rev()
             .map(|f| f.get(pos.col).unwrap())
             .collect::<Vec<_>>(),
 
-        Side::South => (&forest[borns.clone()])
+        Side::South => forest[borns.clone()]
             .iter()
             .map(|f| f.get(pos.col).unwrap())
             .collect(),
 
-        Side::West => (&forest.get(pos.lin).unwrap()[borns.clone()])
+        Side::West => forest.get(pos.lin).unwrap()[borns.clone()]
             .iter()
             .rev()
             .collect(),
 
-        Side::East => (&forest.get(pos.lin).unwrap()[borns.clone()])
-            .iter()
-            .collect(),
+        Side::East => forest.get(pos.lin).unwrap()[borns.clone()].iter().collect(),
     }
     .iter()
     .map(|&t| t < tree_height)
@@ -126,19 +124,17 @@ fn is_tree_visible(forest: &TreeGrid, pos: Pos) -> bool {
     [Side::North, Side::West, Side::South, Side::East]
         .iter()
         .map(|side| is_visible_from_side(forest, *side, pos))
-        .any(|x| x.clone())
+        .any(|x| x)
 }
 
 fn get_visible_trees(input: &TreeGrid) -> Vec<Vec<bool>> {
     let mut output = vec![vec![false; input.first().unwrap().len()]; input.len()];
-    let max_i = input.len();
-    let max_j = input.first().unwrap().len();
-
-    for i in 0..max_i {
-        for j in 0..max_j {
-            output[i][j] = is_tree_visible(&input, Pos { lin: i, col: j });
-        }
-    }
+    output.iter_mut().enumerate().for_each(|(i, output_row)| {
+        output_row
+            .iter_mut()
+            .enumerate()
+            .for_each(|(j, visible)| *visible = is_tree_visible(input, Pos { lin: i, col: j }));
+    });
 
     output
 }
@@ -146,17 +142,14 @@ fn get_visible_trees(input: &TreeGrid) -> Vec<Vec<bool>> {
 fn get_visibility_scores(input: &TreeGrid) -> Vec<Vec<usize>> {
     let mut output = vec![vec![0; input.first().unwrap().len()]; input.len()];
 
-    let max_i = input.len();
-    let max_j = input.first().unwrap().len();
-
-    for i in 0..max_i {
-        for j in 0..max_j {
-            output[i][j] = get_visibility_length(&input, Side::North, Pos { lin: i, col: j })
-                * get_visibility_length(&input, Side::West, Pos { lin: i, col: j })
-                * get_visibility_length(&input, Side::South, Pos { lin: i, col: j })
-                * get_visibility_length(&input, Side::East, Pos { lin: i, col: j });
-        }
-    }
+    output.iter_mut().enumerate().for_each(|(i, output_row)| {
+        output_row.iter_mut().enumerate().for_each(|(j, visible)| {
+            *visible = get_visibility_length(input, Side::North, Pos { lin: i, col: j })
+                * get_visibility_length(input, Side::West, Pos { lin: i, col: j })
+                * get_visibility_length(input, Side::South, Pos { lin: i, col: j })
+                * get_visibility_length(input, Side::East, Pos { lin: i, col: j })
+        });
+    });
 
     output
 }
@@ -227,7 +220,7 @@ mod tests {
     #[test]
     fn test_get_visible_trees() {
         let input = "123\n416\n123\n";
-        let forest = load_input(&input).unwrap();
+        let forest = load_input(input).unwrap();
 
         let visible_trees = get_visible_trees(&forest);
         assert_eq!(

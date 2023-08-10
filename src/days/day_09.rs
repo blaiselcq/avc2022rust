@@ -74,7 +74,7 @@ impl Rope {
                 self.knots[id].move_direction(Direction::Right, dx.signum());
                 self.knots[id].move_direction(Direction::Up, dy.signum());
                 if id == self.knots.len() - 1 {
-                    tail_moves.push(self.knots[id].clone());
+                    tail_moves.push(self.knots[id]);
                 }
             }
         }
@@ -128,7 +128,7 @@ fn parse_input(input: &str) -> Vec<(Direction, i32)> {
         .map(|l| {
             let (direction, distance) = l.split_once(' ').unwrap();
             let direction: Option<Direction> =
-                direction.chars().next().map_or(None, |c| c.try_into().ok());
+                direction.chars().next().and_then(|c| c.try_into().ok());
             let distance: Option<i32> = distance.parse().ok();
             (direction, distance)
         })
@@ -141,7 +141,7 @@ fn parse_input(input: &str) -> Vec<(Direction, i32)> {
 
 fn get_tail_pos(mouvements: Vec<(Direction, i32)>, rope: &mut Rope) -> HashSet<Pos> {
     let mut positions = HashSet::new();
-    positions.insert(rope.get_tail().unwrap().clone());
+    positions.insert(*rope.get_tail().unwrap());
 
     for (direction, distance) in mouvements {
         for pos_tail in rope.move_head(direction, distance) {

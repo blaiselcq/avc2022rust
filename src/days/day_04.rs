@@ -47,7 +47,7 @@ pub fn puzzle_1(input: &str) -> String {
     input
         .split('\n')
         .filter(|x| !x.is_empty())
-        .map(|x| parse_pair(x))
+        .map(parse_pair)
         .map(|(pa, pb)| pa.includes(&pb) || pb.includes(&pa))
         .filter(|x| *x)
         .count()
@@ -58,7 +58,7 @@ pub fn puzzle_2(input: &str) -> String {
     input
         .split('\n')
         .filter(|x| !x.is_empty())
-        .map(|x| parse_pair(x))
+        .map(parse_pair)
         .map(|(pa, pb)| pa.overlaps(&pb) || pb.overlaps(&pa))
         .filter(|x| *x)
         .count()

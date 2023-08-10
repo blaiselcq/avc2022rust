@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 fn no_duplicate(window: &str) -> bool {
-    HashSet::<char>::from_iter(window.chars().into_iter()).len() == window.len()
+    HashSet::<char>::from_iter(window.chars()).len() == window.len()
 }
 
 fn get_start_parker_pos(string: &str, window_size: usize) -> Option<(usize, &str)> {
@@ -42,7 +42,7 @@ mod tests {
 
     #[test]
     fn test_detect_start() {
-        if let Some((i, string)) = get_start_parker_pos(&INPUT, 4) {
+        if let Some((i, string)) = get_start_parker_pos(INPUT, 4) {
             assert_eq!(i + 1, 11);
             assert_eq!(string, "ljwzlrfnpqdbhtmscgvjw");
         } else {
@@ -52,11 +52,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        assert_eq!(puzzle_1(&INPUT), "11");
+        assert_eq!(puzzle_1(INPUT), "11");
     }
 
     #[test]
     fn test_puzzle_2() {
-        assert_eq!(puzzle_2(&INPUT), "26");
+        assert_eq!(puzzle_2(INPUT), "26");
     }
 }
