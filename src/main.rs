@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 mod days;
 
 struct Day {
@@ -78,9 +80,21 @@ fn main() {
     for day in DAYS {
         let input_file_path = format!("./data/inputs/input{:02}.txt", day.day);
         let input_file = std::fs::read_to_string(input_file_path).unwrap();
+
+        let start = Instant::now();
         let puzzle_1 = (day.puzzle_1)(&input_file);
+        println!(
+            "Day {} \t Time: {:.2e} s \t Puzzle 1: {}",
+            day.day,
+            start.elapsed().as_secs_f32(),
+            puzzle_1
+        );
         let puzzle_2 = (day.puzzle_2)(&input_file);
-        println!("Day {} - Puzzle 1: {}", day.day, puzzle_1);
-        println!("Day {} - Puzzle 2: {}", day.day, puzzle_2);
+        println!(
+            "Day {} \t Time: {:.2e} s \t Puzzle 2: {}",
+            day.day,
+            start.elapsed().as_secs_f32(),
+            puzzle_2
+        );
     }
 }
