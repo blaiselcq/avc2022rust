@@ -64,7 +64,7 @@ pub fn puzzle_2(input: &str) -> String {
 mod tests {
 
     fn get_input() -> String {
-        let input_file_path = format!("./data/tests/test{:02}.txt", 3);
+        let input_file_path = format!("../data/tests/test{:02}.txt", 3);
         std::fs::read_to_string(input_file_path).unwrap()
     }
 

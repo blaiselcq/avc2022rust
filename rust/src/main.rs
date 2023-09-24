@@ -83,7 +83,7 @@ const DAYS: [Day; 14] = [
 
 fn main() {
     for day in DAYS {
-        let input_file_path = format!("./data/inputs/input{:02}.txt", day.day);
+        let input_file_path = format!("../data/inputs/input{:02}.txt", day.day);
         let input_file = std::fs::read_to_string(input_file_path).unwrap();
 
         let start = Instant::now();

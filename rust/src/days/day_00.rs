@@ -7,7 +7,7 @@ mod tests {
 
     fn get_input() -> String {
         let day = 0;
-        let input_file_path = format!("./data/tests/test{:02}.txt", day);
+        let input_file_path = format!("../data/tests/test{:02}.txt", day);
         std::fs::read_to_string(input_file_path).unwrap()
     }
 
