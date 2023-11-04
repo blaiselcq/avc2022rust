@@ -8,7 +8,7 @@ struct Day {
     puzzle_2: fn(&str) -> String,
 }
 
-const DAYS: [Day; 14] = [
+const DAYS: [Day; 15] = [
     Day {
         day: 1,
         puzzle_1: days::day_01::puzzle_1,
@@ -78,6 +78,11 @@ const DAYS: [Day; 14] = [
         day: 14,
         puzzle_1: days::day_14::puzzle_1,
         puzzle_2: days::day_14::puzzle_2,
+    },
+    Day {
+        day: 15,
+        puzzle_1: days::day_15::puzzle_1,
+        puzzle_2: days::day_15::puzzle_2,
     },
 ];
 
