@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::{env, time::Instant};
 
 mod days;
 
@@ -82,7 +82,14 @@ const DAYS: [Day; 14] = [
 ];
 
 fn main() {
-    for day in DAYS {
+    let args: Vec<String> = env::args().collect();
+    let day_number = args.get(1).and_then(|d| str::parse::<usize>(d).ok());
+    let selected_days: Box<dyn Iterator<Item = &Day>> = match day_number {
+        None => Box::new(DAYS.iter()),
+        Some(day_number) => Box::new(std::iter::once(DAYS.get(day_number - 1).unwrap())),
+    };
+
+    for day in selected_days {
         let input_file_path = format!("../data/inputs/input{:02}.txt", day.day);
         let input_file = std::fs::read_to_string(input_file_path).unwrap();
 
