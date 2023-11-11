@@ -93,25 +93,32 @@ fn main() {
         None => Box::new(DAYS.iter()),
         Some(day_number) => Box::new(std::iter::once(DAYS.get(day_number - 1).unwrap())),
     };
+    let puzzle_number = args.get(2).and_then(|p| str::parse::<usize>(p).ok());
 
     for day in selected_days {
         let input_file_path = format!("../data/inputs/input{:02}.txt", day.day);
         let input_file = std::fs::read_to_string(input_file_path).unwrap();
 
-        let start = Instant::now();
-        let puzzle_1 = (day.puzzle_1)(&input_file);
-        println!(
-            "Day {} \t Time: {:.2e} s \t Puzzle 1: {}",
-            day.day,
-            start.elapsed().as_secs_f32(),
-            puzzle_1
-        );
-        let puzzle_2 = (day.puzzle_2)(&input_file);
-        println!(
-            "Day {} \t Time: {:.2e} s \t Puzzle 2: {}",
-            day.day,
-            start.elapsed().as_secs_f32(),
-            puzzle_2
-        );
+        if puzzle_number.is_none() || puzzle_number == Some(1) {
+            let start = Instant::now();
+            let puzzle_1 = (day.puzzle_1)(&input_file);
+            println!(
+                "Day {} \t Time: {:.2e} s \t Puzzle 1: {}",
+                day.day,
+                start.elapsed().as_secs_f32(),
+                puzzle_1
+            );
+        }
+
+        if puzzle_number.is_none() || puzzle_number == Some(2) {
+            let start = Instant::now();
+            let puzzle_2 = (day.puzzle_2)(&input_file);
+            println!(
+                "Day {} \t Time: {:.2e} s \t Puzzle 2: {}",
+                day.day,
+                start.elapsed().as_secs_f32(),
+                puzzle_2
+            );
+        }
     }
 }
