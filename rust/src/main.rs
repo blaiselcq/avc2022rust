@@ -10,93 +10,15 @@ struct Day {
     puzzle_2: fn(&str) -> String,
 }
 
-const DAYS: [Day; 17] = [
-    Day {
-        day: 1,
-        puzzle_1: days::day_01::puzzle_1,
-        puzzle_2: days::day_01::puzzle_2,
-    },
-    Day {
-        day: 2,
-        puzzle_1: days::day_02::puzzle_1,
-        puzzle_2: days::day_02::puzzle_2,
-    },
-    Day {
-        day: 3,
-        puzzle_1: days::day_03::puzzle_1,
-        puzzle_2: days::day_03::puzzle_2,
-    },
-    Day {
-        day: 4,
-        puzzle_1: days::day_04::puzzle_1,
-        puzzle_2: days::day_04::puzzle_2,
-    },
-    Day {
-        day: 5,
-        puzzle_1: days::day_05::puzzle_1,
-        puzzle_2: days::day_05::puzzle_2,
-    },
-    Day {
-        day: 6,
-        puzzle_1: days::day_06::puzzle_1,
-        puzzle_2: days::day_06::puzzle_2,
-    },
-    Day {
-        day: 7,
-        puzzle_1: days::day_07::puzzle_1,
-        puzzle_2: days::day_07::puzzle_2,
-    },
-    Day {
-        day: 8,
-        puzzle_1: days::day_08::puzzle_1,
-        puzzle_2: days::day_08::puzzle_2,
-    },
-    Day {
-        day: 9,
-        puzzle_1: days::day_09::puzzle_1,
-        puzzle_2: days::day_09::puzzle_2,
-    },
-    Day {
-        day: 10,
-        puzzle_1: days::day_10::puzzle_1,
-        puzzle_2: days::day_10::puzzle_2,
-    },
-    Day {
-        day: 11,
-        puzzle_1: days::day_11::puzzle_1,
-        puzzle_2: days::day_11::puzzle_2,
-    },
-    Day {
-        day: 12,
-        puzzle_1: days::day_12::puzzle_1,
-        puzzle_2: days::day_12::puzzle_2,
-    },
-    Day {
-        day: 13,
-        puzzle_1: days::day_13::puzzle_1,
-        puzzle_2: days::day_13::puzzle_2,
-    },
-    Day {
-        day: 14,
-        puzzle_1: days::day_14::puzzle_1,
-        puzzle_2: days::day_14::puzzle_2,
-    },
-    Day {
-        day: 15,
-        puzzle_1: days::day_15::puzzle_1,
-        puzzle_2: days::day_15::puzzle_2,
-    },
-    Day {
-        day: 16,
-        puzzle_1: days::day_16::puzzle_1,
-        puzzle_2: days::day_16::puzzle_2,
-    },
-    Day {
-        day: 17,
-        puzzle_1: days::day_17::puzzle_1,
-        puzzle_2: days::day_17::puzzle_2,
-    },
-];
+macro_rules! get_day {
+    ($n: tt, $mod:tt) => {
+        Day {
+            day: $n,
+            puzzle_1: days::$mod::puzzle_1,
+            puzzle_2: days::$mod::puzzle_2,
+        }
+    };
+}
 
 fn execute(day: &Day, puzzle_number: u8, input: &String) {
     let start = Instant::now();
@@ -118,11 +40,31 @@ fn execute(day: &Day, puzzle_number: u8, input: &String) {
 }
 
 fn main() {
+    let days = vec![
+        get_day!(1, day_01),
+        get_day!(2, day_02),
+        get_day!(3, day_03),
+        get_day!(4, day_04),
+        get_day!(5, day_05),
+        get_day!(6, day_06),
+        get_day!(7, day_07),
+        get_day!(8, day_08),
+        get_day!(9, day_09),
+        get_day!(10, day_10),
+        get_day!(11, day_11),
+        get_day!(12, day_12),
+        get_day!(13, day_13),
+        get_day!(14, day_14),
+        get_day!(15, day_15),
+        get_day!(16, day_16),
+        get_day!(17, day_17),
+    ];
+
     let args: Vec<String> = env::args().collect();
     let day_number = args.get(1).and_then(|d| str::parse::<usize>(d).ok());
     let selected_days: Box<dyn Iterator<Item = &Day>> = match day_number {
-        None => Box::new(DAYS.iter()),
-        Some(day_number) => Box::new(std::iter::once(DAYS.get(day_number - 1).unwrap())),
+        None => Box::new(days.iter()),
+        Some(day_number) => Box::new(std::iter::once(days.get(day_number - 1).unwrap())),
     };
     let puzzle_number = args.get(2).and_then(|p| str::parse::<usize>(p).ok());
 
