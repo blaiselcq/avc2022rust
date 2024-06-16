@@ -1,6 +1,8 @@
+use core::panic;
 use std::{env, time::Instant};
 
 mod days;
+mod utils;
 
 struct Day {
     day: u8,
@@ -96,6 +98,25 @@ const DAYS: [Day; 17] = [
     },
 ];
 
+fn execute(day: &Day, puzzle_number: u8, input: &String) {
+    let start = Instant::now();
+    let puzzle = match puzzle_number {
+        1 => day.puzzle_1,
+        2 => day.puzzle_2,
+        _ => panic!(),
+    };
+
+    let result = puzzle(&input);
+
+    println!(
+        "Day {:02} \t Time: {:.2e} s \t Puzzle {}: {}",
+        day.day,
+        start.elapsed().as_secs_f32(),
+        puzzle_number,
+        result
+    );
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let day_number = args.get(1).and_then(|d| str::parse::<usize>(d).ok());
@@ -106,29 +127,13 @@ fn main() {
     let puzzle_number = args.get(2).and_then(|p| str::parse::<usize>(p).ok());
 
     for day in selected_days {
-        let input_file_path = format!("../data/inputs/input{:02}.txt", day.day);
-        let input_file = std::fs::read_to_string(input_file_path).unwrap();
+        let input_file = utils::get_input(utils::InputKind::Run, 22, day.day).unwrap();
 
         if puzzle_number.is_none() || puzzle_number == Some(1) {
-            let start = Instant::now();
-            let puzzle_1 = (day.puzzle_1)(&input_file);
-            println!(
-                "Day {} \t Time: {:.2e} s \t Puzzle 1: {}",
-                day.day,
-                start.elapsed().as_secs_f32(),
-                puzzle_1
-            );
+            execute(day, 1, &input_file);
         }
-
         if puzzle_number.is_none() || puzzle_number == Some(2) {
-            let start = Instant::now();
-            let puzzle_2 = (day.puzzle_2)(&input_file);
-            println!(
-                "Day {} \t Time: {:.2e} s \t Puzzle 2: {}",
-                day.day,
-                start.elapsed().as_secs_f32(),
-                puzzle_2
-            );
+            execute(day, 2, &input_file);
         }
     }
 }

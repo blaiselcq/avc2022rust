@@ -188,16 +188,9 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use crate::utils;
 
-    fn get_input() -> String {
-        let day = 8;
-        let input_file_path = format!("../data/tests/test{:02}.txt", day);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
-
-    use crate::days::day_08::puzzle_1;
-
-    use super::{get_visible_trees, *};
+    use super::*;
 
     #[test]
     fn test_load_input() {
@@ -208,7 +201,7 @@ mod tests {
 
     #[test]
     fn test_is_tree_visible() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
         let forest = load_input(&input).unwrap();
 
         assert!(is_tree_visible(&forest, Pos { lin: 0, col: 0 }));
@@ -235,13 +228,13 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
         assert_eq!(puzzle_1(&input), "21");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
         assert_eq!(puzzle_2(&input), "8");
     }
 }

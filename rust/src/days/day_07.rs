@@ -230,11 +230,7 @@ impl DirCursor {
 
 fn parse_output(text: &str) -> DirCursor {
     let mut dir = DirCursor::create_empty();
-    for line in text
-        .split('\n')
-        .map(|l| l.trim())
-        .filter(|l| !l.is_empty())
-    {
+    for line in text.split('\n').map(|l| l.trim()).filter(|l| !l.is_empty()) {
         dir.handle_line(line).unwrap();
     }
 
@@ -302,12 +298,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    fn get_input() -> String {
-        let day = 7;
-        let input_file_path = format!("../data/tests/test{:02}.txt", day);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
+    use crate::utils;
 
     use super::*;
 
@@ -329,13 +320,13 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 7).unwrap();
         assert_eq!(puzzle_1(&input), "95437");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 7).unwrap();
         assert_eq!(puzzle_2(&input), "24933642");
     }
 }

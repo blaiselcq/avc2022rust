@@ -203,12 +203,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    fn get_input() -> String {
-        let day = 15;
-        let input_file_path = format!("../data/tests/test{:02}.txt", day);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
+    use crate::utils;
 
     use super::*;
 
@@ -216,7 +211,7 @@ mod tests {
     fn test_puzzle_1() {
         let row_number = 10;
 
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 15).unwrap();
         let map = parser::parse_input(&input);
         let footprint = get_footprint(&map);
         let result = get_row(row_number, &map, footprint)
@@ -231,7 +226,7 @@ mod tests {
     fn test_puzzle_2() {
         let max_coord = 20;
 
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 15).unwrap();
         let map = parser::parse_input(&input);
         let first_empty_position = get_first_empty_position(max_coord, &map).unwrap();
 

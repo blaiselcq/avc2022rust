@@ -345,37 +345,30 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    fn get_input() -> String {
-        let day = 16;
-        let input_file_path = format!("../data/tests/test{:02}.txt", day);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
-
-    use crate::days::day_16::parser::parse_input;
+    use crate::{days::day_16::parser::parse_input, utils};
 
     use super::*;
 
     #[test]
     fn test_parse_input() {
-        let input = &get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 16).unwrap();
 
-        let parsed = parse_input(input);
+        let parsed = parse_input(&input);
         let paths = parsed.paths.get(&('A', 'A')).unwrap();
         assert_eq!(paths, &(vec![('D', 'D'), ('I', 'I'), ('B', 'B')], 0),);
     }
 
     #[test]
     fn test_puzzle_1() {
-        let input = &get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 16).unwrap();
 
-        assert_eq!(puzzle_1(input), "1651");
+        assert_eq!(puzzle_1(&input), "1651");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = &get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 16).unwrap();
 
-        assert_eq!(puzzle_2(input), "1707");
+        assert_eq!(puzzle_2(&input), "1707");
     }
 }

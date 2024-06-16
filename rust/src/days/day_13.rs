@@ -96,12 +96,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    fn get_input() -> String {
-        let day = 13;
-        let input_file_path = format!("../data/tests/test{:02}.txt", day);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
+    use crate::utils;
 
     use super::*;
 
@@ -123,7 +118,7 @@ mod tests {
 
     #[test]
     fn test_can_parse_input() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
         let result = parse_input(&input);
 
         assert_eq!(result.len(), 8);
@@ -164,13 +159,13 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
         assert_eq!(puzzle_1(&input), "13");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
         assert_eq!(puzzle_2(&input), "140");
     }
 }

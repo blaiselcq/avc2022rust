@@ -62,11 +62,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-
-    fn get_input() -> String {
-        let input_file_path = format!("../data/tests/test{:02}.txt", 3);
-        std::fs::read_to_string(input_file_path).unwrap()
-    }
+    use crate::utils;
 
     use super::*;
 
@@ -83,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_get_shared_letters() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
         assert_eq!(
             get_shared_letters(&input),
             vec!['p', 'L', 'P', 'v', 't', 's']
@@ -92,7 +88,7 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
         let result = puzzle_1(&input);
 
         assert_eq!(result, "157");
@@ -100,7 +96,7 @@ mod tests {
 
     #[test]
     fn test_puzzle_2() {
-        let input = get_input();
+        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
         let result = puzzle_2(&input);
 
         assert_eq!(result, "70");
