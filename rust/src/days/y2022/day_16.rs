@@ -345,7 +345,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{days::day_16::parser::parse_input, utils};
+    use crate::utils;
 
     use super::*;
 
