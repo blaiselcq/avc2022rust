@@ -7,7 +7,7 @@ use utils::Day;
 mod days;
 mod utils;
 
-fn execute(day: &Day, puzzle_number: u8, input: &String) {
+fn execute(year: u8, day: &Day, puzzle_number: u8, input: &String) {
     let start = Instant::now();
     let puzzle = match puzzle_number {
         1 => day.puzzle_1,
@@ -15,10 +15,11 @@ fn execute(day: &Day, puzzle_number: u8, input: &String) {
         _ => panic!(),
     };
 
-    let result = puzzle(&input);
+    let result = puzzle(input);
 
     println!(
-        "Day {:02} \t Time: {:.2e} s \t Puzzle {}: {}",
+        "Year 20{:02} \t Day {:02} \t Time: {:.2e} s \t Puzzle {}: {}",
+        year,
         day.day,
         start.elapsed().as_secs_f32(),
         puzzle_number,
@@ -41,10 +42,10 @@ fn main() {
         let input_file = utils::get_input(utils::InputKind::Run, year, day.day).unwrap();
 
         if puzzle_number.is_none() || puzzle_number == Some(1) {
-            execute(day, 1, &input_file);
+            execute(year, day, 1, &input_file);
         }
         if puzzle_number.is_none() || puzzle_number == Some(2) {
-            execute(day, 2, &input_file);
+            execute(year, day, 2, &input_file);
         }
     }
 }

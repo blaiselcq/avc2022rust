@@ -1,9 +1,8 @@
 { }:
-let
-  pkgs = import <nixpkgs> {};
+let pkgs = import <nixpkgs> { };
 in pkgs.mkShell {
   name = "avc";
 
-  buildInputs =with pkgs; [ cargo rustc rust-analyzer rustfmt ];
+  buildInputs = with pkgs; [ cargo rustc rust-analyzer rustfmt clippy ];
 }
 
