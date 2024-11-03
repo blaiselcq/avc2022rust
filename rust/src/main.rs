@@ -7,7 +7,7 @@ use utils::Day;
 mod days;
 mod utils;
 
-fn execute(year: u8, day: &Day, puzzle_number: u8, input: &String) {
+fn execute(year: u16, day: &Day, puzzle_number: u8, input: &String) {
     let start = Instant::now();
     let puzzle = match puzzle_number {
         1 => day.puzzle_1,
@@ -18,7 +18,7 @@ fn execute(year: u8, day: &Day, puzzle_number: u8, input: &String) {
     let result = puzzle(input);
 
     println!(
-        "Year 20{:02} \t Day {:02} \t Time: {:.2e} s \t Puzzle {}: {}",
+        "Year {:04} \t Day {:02} \t Time: {:.2e} s \t Puzzle {}: {}",
         year,
         day.day,
         start.elapsed().as_secs_f32(),
@@ -29,7 +29,7 @@ fn execute(year: u8, day: &Day, puzzle_number: u8, input: &String) {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let year = args.get(1).and_then(|d| str::parse::<u8>(d).ok()).unwrap();
+    let year = args.get(1).and_then(|d| str::parse::<u16>(d).ok()).unwrap();
     let days = get_days(year);
     let day_number = args.get(2).and_then(|d| str::parse::<usize>(d).ok());
     let selected_days: Box<dyn Iterator<Item = &Day>> = match day_number {
