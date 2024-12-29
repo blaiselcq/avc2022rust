@@ -210,7 +210,11 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi";
 
     use super::*;
 
@@ -241,16 +245,14 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 12).unwrap();
-        let result = puzzle_1(&input);
+        let result = puzzle_1(INPUT);
 
         assert_eq!(result, "31");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 12).unwrap();
-        let result = puzzle_2(&input);
+        let result = puzzle_2(INPUT);
 
         assert_eq!(result, "29");
     }

@@ -1,7 +1,4 @@
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    iter::Cycle,
-};
+use std::collections::{BTreeMap, BTreeSet};
 
 use itertools::Itertools;
 
@@ -243,7 +240,7 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>";
 
     use super::*;
 
@@ -259,13 +256,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 16).unwrap();
-        assert_eq!(puzzle_1(&input), "3068");
+        assert_eq!(puzzle_1(INPUT), "3068");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 16).unwrap();
-        assert_eq!(puzzle_2(&input), "1514285714288");
+        assert_eq!(puzzle_2(INPUT), "1514285714288");
     }
 }

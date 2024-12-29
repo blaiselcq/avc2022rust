@@ -298,7 +298,29 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k";
 
     use super::*;
 
@@ -320,13 +342,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 7).unwrap();
-        assert_eq!(puzzle_1(&input), "95437");
+        assert_eq!(puzzle_1(INPUT), "95437");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 7).unwrap();
-        assert_eq!(puzzle_2(&input), "24933642");
+        assert_eq!(puzzle_2(INPUT), "24933642");
     }
 }

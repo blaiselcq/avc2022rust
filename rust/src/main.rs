@@ -1,5 +1,9 @@
 use core::panic;
-use std::{env, time::Instant};
+use std::{
+    env,
+    io::{self, Read},
+    time::Instant,
+};
 
 use days::get_days;
 use utils::Day;
@@ -27,25 +31,33 @@ fn execute(year: u16, day: &Day, puzzle_number: u8, input: &String) {
     );
 }
 
+fn get_input() -> io::Result<String> {
+    let mut res = String::new();
+    io::stdin().lock().read_to_string(&mut res)?;
+    Ok(res)
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let year = args.get(1).and_then(|d| str::parse::<u16>(d).ok()).unwrap();
+    let input = get_input().expect("Failed to parse input");
+    let year = args
+        .get(1)
+        .and_then(|d| str::parse::<u16>(d).ok())
+        .expect("Expected a year number");
     let days = get_days(year);
-    let day_number = args.get(2).and_then(|d| str::parse::<usize>(d).ok());
-    let selected_days: Box<dyn Iterator<Item = &Day>> = match day_number {
-        None => Box::new(days.iter()),
-        Some(day_number) => Box::new(std::iter::once(days.get(day_number - 1).unwrap())),
-    };
+    let day_number = args
+        .get(2)
+        .and_then(|d| str::parse::<usize>(d).ok())
+        .expect("Expected a day number");
+    let selected_day = days
+        .get(day_number - 1)
+        .expect("Cannot find selected day for selected year");
     let puzzle_number = args.get(3).and_then(|p| str::parse::<usize>(p).ok());
 
-    for day in selected_days {
-        let input_file = utils::get_input(utils::InputKind::Run, year, day.day).unwrap();
-
-        if puzzle_number.is_none() || puzzle_number == Some(1) {
-            execute(year, day, 1, &input_file);
-        }
-        if puzzle_number.is_none() || puzzle_number == Some(2) {
-            execute(year, day, 2, &input_file);
-        }
+    if puzzle_number.is_none() || puzzle_number == Some(1) {
+        execute(year, selected_day, 1, &input);
+    }
+    if puzzle_number.is_none() || puzzle_number == Some(2) {
+        execute(year, selected_day, 2, &input);
     }
 }

@@ -87,21 +87,30 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010";
 
     use super::*;
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 21, 3).unwrap();
-        let result = puzzle_1(&input);
+        let result = puzzle_1(INPUT);
 
         assert_eq!(result, "198");
     }
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 21, 3).unwrap();
-        let result = puzzle_2(&input);
+        let result = puzzle_2(INPUT);
 
         assert_eq!(result, "230");
     }

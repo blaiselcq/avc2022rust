@@ -2,6 +2,36 @@
 
 set -e
 
+function get_input() {
+  local -r year=$(printf "%d" "$1");
+  local -r day=$(printf "%d" "$2");
+
+  local session_cookie
+  session_cookie=$(cat .session)
+
+  local output
+  output=$(curl "https://adventofcode.com/$year/day/$day/input"\
+           -H "Cookie: $session_cookie")
+
+  echo "$output"
+}
+
+function get_input_with_cache() {
+  local -r year=$(printf "%d" "$1");
+  local -r day=$(printf "%d" "$2");
+
+  local -r scriptdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+  mkdir -p "$scriptdir"/.inputs
+  local -r filename="$scriptdir"/.inputs/${year}_${day}.txt
+
+  if [[ -f $filename ]]; then
+    cat "$filename"
+  else
+    get_input "$year" "$day" > "$filename"
+    cat "$filename"
+  fi
+}
+
 if ! hash docopts
 then
 echo "docopts must be available"
@@ -10,7 +40,8 @@ fi
 
 ##? Usage:
 ##?   run.sh (-h|--help)
-##?   run.sh (test|run) <year> [<day> [<puzzle_number>]] [--implem=<lang>]
+##?   run.sh test <year> [<day> [<puzzle_number>]] [--implem=<lang>]
+##?   run.sh run <year> <day> [<puzzle_number>] [--implem=<lang>]
 ##?
 ##? Options:
 ##?   --implem=<lang>  Implementation of the solution [default: rust].
@@ -28,16 +59,18 @@ implem_rust() {
   local day=$3
   local number=$4
 
-  cd "$(dirname "$0")/rust"
-
   if [[ $is_test == "true" ]]
   then
       local filter=""
       if [[ $year ]]; then filter=$filter"y$year"; fi 
       if [[ $day ]]; then filter=$filter"::day_$(printf "%02d" "$day")"; fi 
+      cd "$(dirname "$0")/rust"
       cargo test "$filter"
   else
-      cargo run "$year" "$day" "$number" --release
+      local input
+      input=$(get_input_with_cache "$year" "$day")
+      cd "$(dirname "$0")/rust"
+      echo "$input" | cargo run --release -- "$year" "$day" "$number"
   fi
 }
 

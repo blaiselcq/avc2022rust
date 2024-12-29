@@ -62,7 +62,12 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw";
 
     use super::*;
 
@@ -79,25 +84,22 @@ mod tests {
 
     #[test]
     fn test_get_shared_letters() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
         assert_eq!(
-            get_shared_letters(&input),
+            get_shared_letters(INPUT),
             vec!['p', 'L', 'P', 'v', 't', 's']
         );
     }
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
-        let result = puzzle_1(&input);
+        let result = puzzle_1(INPUT);
 
         assert_eq!(result, "157");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 3).unwrap();
-        let result = puzzle_2(&input);
+        let result = puzzle_2(INPUT);
 
         assert_eq!(result, "70");
     }

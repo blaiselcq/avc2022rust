@@ -188,7 +188,11 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "30373
+25512
+65332
+33549
+35390";
 
     use super::*;
 
@@ -201,8 +205,7 @@ mod tests {
 
     #[test]
     fn test_is_tree_visible() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
-        let forest = load_input(&input).unwrap();
+        let forest = load_input(INPUT).unwrap();
 
         assert!(is_tree_visible(&forest, Pos { lin: 0, col: 0 }));
         assert!(is_tree_visible(&forest, Pos { lin: 1, col: 1 }));
@@ -228,13 +231,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
-        assert_eq!(puzzle_1(&input), "21");
+        assert_eq!(puzzle_1(INPUT), "21");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 8).unwrap();
-        assert_eq!(puzzle_2(&input), "8");
+        assert_eq!(puzzle_2(INPUT), "8");
     }
 }

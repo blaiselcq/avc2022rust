@@ -96,7 +96,29 @@ pub fn puzzle_2(input: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::utils;
+    const INPUT: &str = "[1,1,3,1,1]
+[1,1,5,1,1]
+
+[[1],[2,3,4]]
+[[1],4]
+
+[9]
+[[8,7,6]]
+
+[[4,4],4,4]
+[[4,4],4,4,4]
+
+[7,7,7,7]
+[7,7,7]
+
+[]
+[3]
+
+[[[]]]
+[[]]
+
+[1,[2,[3,[4,[5,6,7]]]],8,9]
+[1,[2,[3,[4,[5,6,0]]]],8,9]";
 
     use super::*;
 
@@ -118,8 +140,7 @@ mod tests {
 
     #[test]
     fn test_can_parse_input() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
-        let result = parse_input(&input);
+        let result = parse_input(INPUT);
 
         assert_eq!(result.len(), 8);
     }
@@ -159,13 +180,11 @@ mod tests {
 
     #[test]
     fn test_puzzle_1() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
-        assert_eq!(puzzle_1(&input), "13");
+        assert_eq!(puzzle_1(INPUT), "13");
     }
 
     #[test]
     fn test_puzzle_2() {
-        let input = utils::get_input(utils::InputKind::Test, 22, 13).unwrap();
-        assert_eq!(puzzle_2(&input), "140");
+        assert_eq!(puzzle_2(INPUT), "140");
     }
 }
