@@ -1,7 +1,4 @@
-extern crate simple_error;
-
-use simple_error::SimpleError;
-
+use core::panic;
 use std::cmp::{Ord, Ordering, PartialEq};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -89,42 +86,42 @@ impl Hand {
     }
 }
 
-fn parse_hand_from_first_case(line: &str) -> Result<Hand, SimpleError> {
+fn parse_hand_from_first_case(line: &str) -> Hand {
     let (them_move, us_move) = line.split_once(' ').unwrap();
 
     let us_move = match us_move {
-        "X" => Ok(Move::Rock),
-        "Y" => Ok(Move::Paper),
-        "Z" => Ok(Move::Scissors),
-        _ => Err(SimpleError::new("Failed to parse the us move")),
-    }?;
+        "X" => Move::Rock,
+        "Y" => Move::Paper,
+        "Z" => Move::Scissors,
+        _ => panic!("Failed to parse the us move"),
+    };
 
     let them_move = match them_move {
-        "A" => Ok(Move::Rock),
-        "B" => Ok(Move::Paper),
-        "C" => Ok(Move::Scissors),
-        _ => Err(SimpleError::new("Failed to parse the us move")),
-    }?;
+        "A" => Move::Rock,
+        "B" => Move::Paper,
+        "C" => Move::Scissors,
+        _ => panic!("Failed to parse the them move"),
+    };
 
-    Ok(Hand { us_move, them_move })
+    Hand { us_move, them_move }
 }
 
-fn parse_hand_from_second_case(line: &str) -> Result<Hand, SimpleError> {
+fn parse_hand_from_second_case(line: &str) -> Hand {
     let (them_move, expected_outcome) = line.split_once(' ').unwrap();
 
     let expected_outcome = match expected_outcome {
-        "X" => Ok(Outcome::Loose),
-        "Y" => Ok(Outcome::Draw),
-        "Z" => Ok(Outcome::Win),
-        _ => Err(SimpleError::new("Failed to parse the us move")),
-    }?;
+        "X" => Outcome::Loose,
+        "Y" => Outcome::Draw,
+        "Z" => Outcome::Win,
+        _ => panic!("Failed to parse the expected outcome"),
+    };
 
     let them_move = match them_move {
-        "A" => Ok(Move::Rock),
-        "B" => Ok(Move::Paper),
-        "C" => Ok(Move::Scissors),
-        _ => Err(SimpleError::new("Failed to parse the us move")),
-    }?;
+        "A" => Move::Rock,
+        "B" => Move::Paper,
+        "C" => Move::Scissors,
+        _ => panic!("Failed to parse the them move"),
+    };
 
     let us_move = match expected_outcome {
         Outcome::Draw => them_move.clone(),
@@ -140,20 +137,20 @@ fn parse_hand_from_second_case(line: &str) -> Result<Hand, SimpleError> {
         },
     };
 
-    Ok(Hand { us_move, them_move })
+    Hand { us_move, them_move }
 }
 
 fn get_hands_from_input_first_case(input: &str) -> Vec<Hand> {
     input
         .lines()
-        .map(|line| parse_hand_from_first_case(line).unwrap())
+        .map(|line| parse_hand_from_first_case(line))
         .collect()
 }
 
 fn get_hands_from_input_second_case(input: &str) -> Vec<Hand> {
     input
         .lines()
-        .map(|line| parse_hand_from_second_case(line).unwrap())
+        .map(|line| parse_hand_from_second_case(line))
         .collect()
 }
 
@@ -182,7 +179,7 @@ mod tests {
     #[test]
     fn parse_hand_case_1() {
         let hand_str = "A Y";
-        let hand = parse_hand_from_first_case(hand_str).unwrap();
+        let hand = parse_hand_from_first_case(hand_str);
 
         assert_eq!(hand.them_move, Move::Rock);
         assert_eq!(hand.us_move, Move::Paper);
@@ -192,7 +189,7 @@ mod tests {
     #[test]
     fn parse_hand_case_2() {
         let hand_str = "A Y";
-        let hand = parse_hand_from_second_case(hand_str).unwrap();
+        let hand = parse_hand_from_second_case(hand_str);
 
         assert_eq!(hand.them_move, Move::Rock);
         assert_eq!(hand.us_move, Move::Rock);
