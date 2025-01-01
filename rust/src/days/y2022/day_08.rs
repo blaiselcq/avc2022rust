@@ -1,4 +1,22 @@
+use crate::structs::geometry::Point2;
+
+type Point = Point2<usize>;
 type TreeGrid = Vec<Vec<u8>>;
+
+#[derive(Clone, Copy, Debug)]
+enum Side {
+    North,
+    West,
+    South,
+    East,
+}
+
+//      N
+//   |------> y
+// W |         E
+//   \/
+//   x
+//      S
 
 fn load_input(input: &str) -> Result<TreeGrid, ()> {
     let output: Vec<Vec<u8>> = input
@@ -18,53 +36,39 @@ fn load_input(input: &str) -> Result<TreeGrid, ()> {
     Ok(output)
 }
 
-#[derive(Clone, Copy, Debug)]
-struct Pos {
-    lin: usize,
-    col: usize,
-}
-
-#[derive(Clone, Copy, Debug)]
-enum Side {
-    North,
-    West,
-    South,
-    East,
-}
-
-fn is_visible_from_side(forest: &TreeGrid, side: Side, pos: Pos) -> bool {
+fn is_visible_from_side(forest: &TreeGrid, side: Side, pos: Point) -> bool {
     let directly_visible = match side {
-        Side::North => pos.lin == 0,
-        Side::West => pos.col == 0,
-        Side::South => pos.lin == forest.len() - 1,
-        Side::East => pos.col == forest.first().unwrap().len() - 1,
+        Side::North => pos.x == 0,
+        Side::West => pos.y == 0,
+        Side::South => pos.x == forest.len() - 1,
+        Side::East => pos.y == forest.first().unwrap().len() - 1,
     };
 
     if directly_visible {
         return true;
     }
 
-    let tree_height = &forest[pos.lin][pos.col];
+    let tree_height = &forest[pos.x][pos.y];
 
     let borns = match side {
-        Side::North => 0..pos.lin,
-        Side::West => 0..pos.col,
-        Side::South => pos.lin + 1..forest.len(),
-        Side::East => pos.col + 1..forest.get(pos.lin).unwrap().len(),
+        Side::North => 0..pos.x,
+        Side::West => 0..pos.y,
+        Side::South => pos.x + 1..forest.len(),
+        Side::East => pos.y + 1..forest.get(pos.x).unwrap().len(),
     };
 
     match side {
         Side::North | Side::South => {
             &forest[borns]
                 .iter()
-                .map(|f| f.get(pos.col).unwrap())
+                .map(|f| f.get(pos.y).unwrap())
                 .max()
                 .unwrap()
                 .clone()
                 < tree_height
         }
         Side::West | Side::East => {
-            &forest.get(pos.lin).unwrap()[borns]
+            &forest.get(pos.x).unwrap()[borns]
                 .iter()
                 .max()
                 .unwrap()
@@ -74,45 +78,45 @@ fn is_visible_from_side(forest: &TreeGrid, side: Side, pos: Pos) -> bool {
     }
 }
 
-fn get_visibility_length(forest: &TreeGrid, side: Side, pos: Pos) -> usize {
+fn get_visibility_length(forest: &TreeGrid, side: Side, pos: Point) -> usize {
     let on_edge = match side {
-        Side::North => pos.lin == 0,
-        Side::West => pos.col == 0,
-        Side::South => pos.lin == forest.len() - 1,
-        Side::East => pos.col == forest.first().unwrap().len() - 1,
+        Side::North => pos.x == 0,
+        Side::West => pos.y == 0,
+        Side::South => pos.x == forest.len() - 1,
+        Side::East => pos.y == forest.first().unwrap().len() - 1,
     };
 
     if on_edge {
         return 0;
     }
 
-    let tree_height = &forest[pos.lin][pos.col];
+    let tree_height = &forest[pos.x][pos.y];
 
     let borns = match side {
-        Side::North => 0..pos.lin,
-        Side::West => 0..pos.col,
-        Side::South => pos.lin + 1..forest.len(),
-        Side::East => pos.col + 1..forest.get(pos.lin).unwrap().len(),
+        Side::North => 0..pos.x,
+        Side::West => 0..pos.y,
+        Side::South => pos.x + 1..forest.len(),
+        Side::East => pos.y + 1..forest.get(pos.x).unwrap().len(),
     };
 
     match side {
         Side::North => forest[borns.clone()]
             .iter()
             .rev()
-            .map(|f| f.get(pos.col).unwrap())
+            .map(|f| f.get(pos.y).unwrap())
             .collect::<Vec<_>>(),
 
         Side::South => forest[borns.clone()]
             .iter()
-            .map(|f| f.get(pos.col).unwrap())
+            .map(|f| f.get(pos.y).unwrap())
             .collect(),
 
-        Side::West => forest.get(pos.lin).unwrap()[borns.clone()]
+        Side::West => forest.get(pos.x).unwrap()[borns.clone()]
             .iter()
             .rev()
             .collect(),
 
-        Side::East => forest.get(pos.lin).unwrap()[borns.clone()].iter().collect(),
+        Side::East => forest.get(pos.x).unwrap()[borns.clone()].iter().collect(),
     }
     .iter()
     .map(|&t| t < tree_height)
@@ -120,7 +124,7 @@ fn get_visibility_length(forest: &TreeGrid, side: Side, pos: Pos) -> usize {
     .map_or(borns.count(), |v| v + 1)
 }
 
-fn is_tree_visible(forest: &TreeGrid, pos: Pos) -> bool {
+fn is_tree_visible(forest: &TreeGrid, pos: Point) -> bool {
     [Side::North, Side::West, Side::South, Side::East]
         .iter()
         .map(|side| is_visible_from_side(forest, *side, pos))
@@ -133,7 +137,7 @@ fn get_visible_trees(input: &TreeGrid) -> Vec<Vec<bool>> {
         output_row
             .iter_mut()
             .enumerate()
-            .for_each(|(j, visible)| *visible = is_tree_visible(input, Pos { lin: i, col: j }));
+            .for_each(|(j, visible)| *visible = is_tree_visible(input, Point { x: i, y: j }));
     });
 
     output
@@ -144,10 +148,10 @@ fn get_visibility_scores(input: &TreeGrid) -> Vec<Vec<usize>> {
 
     output.iter_mut().enumerate().for_each(|(i, output_row)| {
         output_row.iter_mut().enumerate().for_each(|(j, visible)| {
-            *visible = get_visibility_length(input, Side::North, Pos { lin: i, col: j })
-                * get_visibility_length(input, Side::West, Pos { lin: i, col: j })
-                * get_visibility_length(input, Side::South, Pos { lin: i, col: j })
-                * get_visibility_length(input, Side::East, Pos { lin: i, col: j })
+            *visible = get_visibility_length(input, Side::North, Point { x: i, y: j })
+                * get_visibility_length(input, Side::West, Point { x: i, y: j })
+                * get_visibility_length(input, Side::South, Point { x: i, y: j })
+                * get_visibility_length(input, Side::East, Point { x: i, y: j })
         });
     });
 
@@ -207,10 +211,10 @@ mod tests {
     fn test_is_tree_visible() {
         let forest = load_input(INPUT).unwrap();
 
-        assert!(is_tree_visible(&forest, Pos { lin: 0, col: 0 }));
-        assert!(is_tree_visible(&forest, Pos { lin: 1, col: 1 }));
-        assert!(!is_tree_visible(&forest, Pos { lin: 1, col: 3 }));
-        assert!(!is_tree_visible(&forest, Pos { lin: 2, col: 2 }));
+        assert!(is_tree_visible(&forest, Point { x: 0, y: 0 }));
+        assert!(is_tree_visible(&forest, Point { x: 1, y: 1 }));
+        assert!(!is_tree_visible(&forest, Point { x: 1, y: 3 }));
+        assert!(!is_tree_visible(&forest, Point { x: 2, y: 2 }));
     }
 
     #[test]

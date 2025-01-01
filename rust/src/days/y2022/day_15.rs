@@ -2,14 +2,12 @@ use std::{collections::BTreeMap, ops::RangeInclusive};
 
 use itertools::Itertools;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) struct Coord {
-    x: i32,
-    y: i32,
-}
+use crate::structs::geometry::Point2;
+
+type Point = Point2<i32>;
 
 pub(crate) struct Sensor {
-    closest_beacon: Coord,
+    closest_beacon: Point,
     distance: i32,
 }
 
@@ -19,14 +17,6 @@ enum MapState {
     Empty,
     Beacon,
     Sensor,
-}
-
-impl Coord {
-    fn manhattan_distance(&self, other: &Self) -> i32 {
-        (self.x.abs_diff(other.x) + self.y.abs_diff(other.y))
-            .try_into()
-            .unwrap()
-    }
 }
 
 mod parser {
@@ -40,15 +30,15 @@ mod parser {
         IResult,
     };
 
-    use super::{Coord, Sensor};
+    use super::{Point, Sensor};
 
-    fn parse_coord(input: &str) -> IResult<&str, Coord> {
+    fn parse_coord(input: &str) -> IResult<&str, Point> {
         let (input, coord) = separated_pair(
             preceded(tag("x="), complete::i32),
             tag(", "),
             preceded(tag("y="), complete::i32),
         )(input)?;
-        let coord = Coord {
+        let coord = Point {
             x: coord.0,
             y: coord.1,
         };
@@ -56,14 +46,14 @@ mod parser {
         Ok((input, coord))
     }
 
-    fn parse_line(input: &str) -> IResult<&str, (Coord, Sensor)> {
+    fn parse_line(input: &str) -> IResult<&str, (Point, Sensor)> {
         let (input, (sensor, closest_beacon)) = separated_pair(
             preceded(tag("Sensor at "), parse_coord),
             tag(": "),
             preceded(tag("closest beacon is at "), parse_coord),
         )(input)?;
 
-        let distance = sensor.manhattan_distance(&closest_beacon);
+        let distance = sensor.distance_1(&closest_beacon);
         Ok((
             input,
             (
@@ -76,14 +66,14 @@ mod parser {
         ))
     }
 
-    pub(crate) fn parse_input(input: &str) -> BTreeMap<Coord, Sensor> {
+    pub(crate) fn parse_input(input: &str) -> BTreeMap<Point, Sensor> {
         let (_, result) = separated_list1(line_ending, parse_line)(input).unwrap();
 
         result.into_iter().collect()
     }
 }
 
-fn get_footprint(map: &BTreeMap<Coord, Sensor>) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
+fn get_footprint(map: &BTreeMap<Point, Sensor>) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
     if map.is_empty() {
         return ((0..=0), (0..=0));
     }
@@ -114,7 +104,7 @@ fn get_footprint(map: &BTreeMap<Coord, Sensor>) -> (RangeInclusive<i32>, RangeIn
 
 fn get_row(
     row_number: i32,
-    map: &BTreeMap<Coord, Sensor>,
+    map: &BTreeMap<Point, Sensor>,
     footprint: (RangeInclusive<i32>, RangeInclusive<i32>),
 ) -> Vec<MapState> {
     let (x_range, _) = footprint;
@@ -145,7 +135,7 @@ fn get_row(
     result
 }
 
-fn get_first_empty_position(subgrid_size: i32, map: &BTreeMap<Coord, Sensor>) -> Option<Coord> {
+fn get_first_empty_position(subgrid_size: i32, map: &BTreeMap<Point, Sensor>) -> Option<Point> {
     for row_number in 0..=subgrid_size {
         let ranges = map
             .iter()
@@ -167,7 +157,7 @@ fn get_first_empty_position(subgrid_size: i32, map: &BTreeMap<Coord, Sensor>) ->
             }
 
             if min > covered_until + 1 {
-                return Some(Coord {
+                return Some(Point {
                     x: covered_until + 1,
                     y: row_number,
                 });

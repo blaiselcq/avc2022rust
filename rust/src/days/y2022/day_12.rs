@@ -3,20 +3,18 @@ use std::{
     collections::{BTreeMap, BTreeSet},
 };
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Clone, Copy)]
-struct Coords {
-    x: usize,
-    y: usize,
-}
+use crate::structs::geometry::Point2;
+
+type Point = Point2<u16>;
 
 #[derive(Debug, Eq)]
 struct TreeNode {
-    position: Coords,
-    path: Vec<Coords>,
+    position: Point,
+    path: Vec<Point>,
     children: Vec<TreeNode>,
 }
 
-impl Coords {
+impl Point {
     fn shift_left(self) -> Self {
         Self {
             x: self.x.saturating_sub(1),
@@ -66,15 +64,18 @@ impl PartialEq for TreeNode {
     }
 }
 
-fn parse_input(input: &str) -> (Coords, Coords, BTreeMap<Coords, char>) {
-    let mut height_map_char: BTreeMap<Coords, char> = input
+fn parse_input(input: &str) -> (Point, Point, BTreeMap<Point, char>) {
+    let mut height_map_char: BTreeMap<Point, char> = input
         .split('\n')
         .filter(|line| !line.is_empty())
         .enumerate()
         .flat_map(|(y, line)| {
             line.chars().enumerate().map({
                 move |(x, h)| {
-                    let coords = Coords { x, y };
+                    let coords = Point {
+                        x: x as u16,
+                        y: y as u16,
+                    };
                     (coords, h)
                 }
             })
@@ -91,9 +92,9 @@ fn parse_input(input: &str) -> (Coords, Coords, BTreeMap<Coords, char>) {
 }
 
 fn find_accesible_squares(
-    height_map: &BTreeMap<Coords, char>,
-    current_position: Coords,
-) -> Vec<Coords> {
+    height_map: &BTreeMap<Point, char>,
+    current_position: Point,
+) -> Vec<Point> {
     let mut accessible_squares = vec![];
 
     let &current_height = height_map.get(&current_position).unwrap();
@@ -116,10 +117,10 @@ fn find_accesible_squares(
 }
 
 fn find_solution(
-    height_map: BTreeMap<Coords, char>,
-    start: Option<Coords>,
-    end: Coords,
-) -> Vec<Coords> {
+    height_map: BTreeMap<Point, char>,
+    start: Option<Point>,
+    end: Point,
+) -> Vec<Point> {
     let mut visited_positions = BTreeMap::new();
 
     // The ordering uses position and path, which are not modified
@@ -223,11 +224,11 @@ abdefghi";
         let input = "Sab\nabc\nacE\n";
 
         let (start, goal, height_map) = parse_input(input);
-        assert_eq!(start, Coords { x: 0, y: 0 });
-        assert_eq!(goal, Coords { x: 2, y: 2 });
+        assert_eq!(start, Point { x: 0, y: 0 });
+        assert_eq!(goal, Point { x: 2, y: 2 });
 
         assert_eq!(height_map[&goal], 'z');
-        assert_eq!(height_map[&Coords { x: 1, y: 1 }], 'b');
+        assert_eq!(height_map[&Point { x: 1, y: 1 }], 'b');
     }
 
     #[test]
@@ -236,10 +237,10 @@ abdefghi";
 
         let (_, _, height_map) = parse_input(input);
 
-        let accessible_positions = find_accesible_squares(&height_map, Coords { x: 2, y: 1 });
+        let accessible_positions = find_accesible_squares(&height_map, Point { x: 2, y: 1 });
         assert_eq!(
             accessible_positions,
-            vec![Coords { x: 1, y: 1 }, Coords { x: 2, y: 0 }]
+            vec![Point { x: 1, y: 1 }, Point { x: 2, y: 0 }]
         );
     }
 

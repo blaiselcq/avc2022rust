@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 use num::{Integer, Signed};
 
@@ -11,7 +11,46 @@ where
     pub y: S,
 }
 
-type Vector2<S> = Point2<S>;
+macro_rules! point2 {
+    ($x:expr, $y:expr) => {
+        Point2 { x: $x, y: $y }
+    };
+}
+pub(crate) use point2;
+
+pub type Vector2<S> = Point2<S>;
+
+impl<S> Point2<S>
+where
+    S: Integer + Copy,
+{
+    pub fn unit_x() -> Self {
+        Point2 {
+            x: S::one(),
+            y: S::zero(),
+        }
+    }
+
+    pub fn unit_y() -> Self {
+        Point2 {
+            x: S::zero(),
+            y: S::one(),
+        }
+    }
+}
+
+impl<S> Point2<S>
+where
+    S: Integer + Copy + Signed,
+{
+    pub fn norm_1(&self) -> S {
+        self.x.abs() + self.y.abs()
+    }
+
+    pub fn distance_1(&self, rhs: &Self) -> S {
+        (self.x - rhs.x).abs() + (self.y - rhs.y).abs()
+    }
+}
 
 impl<S> Add for Point2<S>
 where
@@ -61,6 +100,68 @@ where
     }
 }
 
+impl<S> Mul<S> for Vector2<S>
+where
+    S: Integer + Copy,
+{
+    type Output = Vector2<S>;
+
+    fn mul(self, rhs: S) -> Self::Output {
+        Vector2 {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
+    }
+}
+
+impl<S> MulAssign<S> for Vector2<S>
+where
+    S: Integer + Copy,
+{
+    fn mul_assign(&mut self, rhs: S) {
+        self.x = self.x * rhs;
+        self.y = self.y * rhs;
+    }
+}
+
+impl<S> Div<S> for Vector2<S>
+where
+    S: Integer + Copy,
+{
+    type Output = Vector2<S>;
+
+    fn div(self, rhs: S) -> Self::Output {
+        Vector2 {
+            x: self.x / rhs,
+            y: self.y / rhs,
+        }
+    }
+}
+
+impl<S> DivAssign<S> for Vector2<S>
+where
+    S: Integer + Copy,
+{
+    fn div_assign(&mut self, rhs: S) {
+        self.x = self.x / rhs;
+        self.y = self.y / rhs;
+    }
+}
+
+impl<S> Neg for Vector2<S>
+where
+    S: Integer + Signed,
+{
+    type Output = Vector2<S>;
+
+    fn neg(self) -> Self::Output {
+        Vector2 {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Line2<S>
 where
@@ -74,6 +175,10 @@ impl<S> Line2<S>
 where
     S: Integer + Signed + Copy,
 {
+    pub fn length_1(&self) -> S {
+        self.end.distance_1(&self.end)
+    }
+
     fn vec(&self) -> Vector2<S> {
         let dx = self.end.x - self.start.x;
         let dy = self.end.y - self.start.y;

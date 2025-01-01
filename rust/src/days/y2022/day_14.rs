@@ -5,6 +5,10 @@ use nom::{
     sequence::separated_pair,
 };
 
+use crate::structs::geometry::Point2;
+
+type Point = Point2<usize>;
+
 #[derive(Debug)]
 struct Map {
     bottom_height: usize,
@@ -13,13 +17,13 @@ struct Map {
 }
 
 impl Map {
-    fn set_occupied(&mut self, x: usize, y: usize) {
-        let data_x = x - self.offset_x;
-        self.data[y][data_x] = true;
+    fn set_occupied(&mut self, point: Point) {
+        let data_x = point.x - self.offset_x;
+        self.data[point.y][data_x] = true;
     }
-    fn is_occupied(&self, x: usize, y: usize) -> bool {
-        let data_x = x - self.offset_x;
-        self.data[y][data_x]
+    fn is_occupied(&self, point: Point) -> bool {
+        let data_x = point.x - self.offset_x;
+        self.data[point.y][data_x]
     }
 }
 
@@ -68,13 +72,13 @@ fn parse_input(input: &str) -> Map {
             let finish = segment[1];
             if start.0 != finish.0 {
                 for x in get_range(start.0, finish.0) {
-                    output_map.set_occupied(x, start.1);
+                    output_map.set_occupied(Point { x, y: start.1 });
                 }
                 return;
             }
             if start.1 != finish.1 {
                 for y in get_range(start.1, finish.1) {
-                    output_map.set_occupied(start.0, y);
+                    output_map.set_occupied(Point { x: start.0, y });
                 }
             }
         });
@@ -83,35 +87,33 @@ fn parse_input(input: &str) -> Map {
     output_map
 }
 
-fn sand_fall(map: &Map, coords: (usize, usize)) -> (usize, usize) {
-    let (x, y) = coords;
-
-    if !map.is_occupied(x, y + 1) {
-        return (x, y + 1);
+fn sand_fall(map: &Map, point: Point) -> Point {
+    if !map.is_occupied(point + Point::unit_y()) {
+        return point + Point::unit_y();
     }
-    if !map.is_occupied(x - 1, y + 1) {
-        return (x - 1, y + 1);
+    if !map.is_occupied(point + Point::unit_y() - Point::unit_x()) {
+        return point + Point::unit_y() - Point::unit_x();
     }
-    if !map.is_occupied(x + 1, y + 1) {
-        return (x + 1, y + 1);
+    if !map.is_occupied(point + Point::unit_y() + Point::unit_x()) {
+        return point + Point::unit_y() + Point::unit_x();
     }
-    (x, y)
+    point
 }
 
 fn pour_sand(map: &mut Map, has_floor: bool) -> bool {
-    let mut coord = (500, 0);
+    let mut coord = Point { x: 500, y: 0 };
 
     loop {
         let fallen_coord = sand_fall(map, coord);
         if coord == fallen_coord {
-            map.set_occupied(coord.0, coord.1);
-            return has_floor && coord.1 < 1;
+            map.set_occupied(coord);
+            return has_floor && coord.y < 1;
         }
-        if has_floor && fallen_coord.1 == map.bottom_height {
-            map.set_occupied(coord.0, coord.1);
+        if has_floor && fallen_coord.y == map.bottom_height {
+            map.set_occupied(coord);
             return false;
         }
-        if !has_floor && fallen_coord.1 >= map.bottom_height {
+        if !has_floor && fallen_coord.y >= map.bottom_height {
             return true;
         }
         coord = fallen_coord;

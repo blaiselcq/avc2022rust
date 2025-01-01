@@ -1,62 +1,32 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
-#[derive(PartialEq, Eq, Debug, Hash, Clone, Copy)]
-struct Pos {
-    x: i32,
-    y: i32,
-}
+use crate::structs::geometry::Point2;
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Direction {
-    Up,
-    Down,
-    Right,
-    Left,
-}
+type Point = Point2<i32>;
+type Vector = Point2<i32>;
 
 struct Rope {
-    knots: Vec<Pos>,
-}
-
-impl TryFrom<char> for Direction {
-    type Error = ();
-    fn try_from(value: char) -> Result<Self, ()> {
-        match value {
-            'U' => Ok(Direction::Up),
-            'D' => Ok(Direction::Down),
-            'R' => Ok(Direction::Right),
-            'L' => Ok(Self::Left),
-            _ => Err(()),
-        }
-    }
-}
-
-impl Pos {
-    fn move_direction(&mut self, direction: Direction, distance: i32) {
-        match direction {
-            Direction::Up => self.y += distance,
-            Direction::Down => self.y -= distance,
-            Direction::Right => self.x += distance,
-            Direction::Left => self.x -= distance,
-        };
-    }
+    knots: Vec<Point>,
 }
 
 impl Rope {
-    fn new(knots: usize, starting_pos: Pos) -> Rope {
+    fn new(knots: usize, starting_pos: Point) -> Rope {
         Rope {
             knots: vec![starting_pos; knots],
         }
     }
-    fn get_tail(&self) -> Option<&Pos> {
+
+    fn get_tail(&self) -> Option<&Point> {
         return self.knots.last();
     }
-    fn move_head(&mut self, direction: Direction, distance: i32) -> Vec<Pos> {
+
+    fn move_head(&mut self, vector: Vector) -> Vec<Point> {
         let mut tail_moves = vec![];
 
+        let distance = vector.norm_1();
         for _ in 0..distance {
             if let Some(head) = self.knots.get_mut(0) {
-                head.move_direction(direction, 1);
+                *head += vector / distance;
             } else {
                 return tail_moves;
             }
@@ -71,8 +41,8 @@ impl Rope {
                     continue;
                 }
 
-                self.knots[id].move_direction(Direction::Right, dx.signum());
-                self.knots[id].move_direction(Direction::Up, dy.signum());
+                self.knots[id] += Vector::unit_x() * dx.signum();
+                self.knots[id] += Vector::unit_y() * dy.signum();
                 if id == self.knots.len() - 1 {
                     tail_moves.push(self.knots[id]);
                 }
@@ -84,13 +54,13 @@ impl Rope {
 }
 
 #[allow(dead_code)]
-fn print_debug_pos(input: &HashSet<Pos>) {
+fn print_debug_pos(input: &BTreeSet<Point>) {
     let mut max_x = 0;
     let mut max_y = 0;
     let mut min_x = 0;
     let mut min_y = 0;
 
-    input.iter().for_each(|Pos { x, y }| {
+    input.iter().for_each(|Point { x, y }| {
         if x < &min_x {
             min_x = *x;
         }
@@ -111,7 +81,7 @@ fn print_debug_pos(input: &HashSet<Pos>) {
         for x in min_x..=max_x {
             if x == 0 && y == 0 {
                 line.push('s');
-            } else if input.contains(&Pos { x, y }) {
+            } else if input.contains(&Point { x, y }) {
                 line.push('#');
             } else {
                 line.push('.');
@@ -121,30 +91,40 @@ fn print_debug_pos(input: &HashSet<Pos>) {
     }
 }
 
-fn parse_input(input: &str) -> Vec<(Direction, i32)> {
+fn parse_direction(value: char) -> Result<Point, ()> {
+    match value {
+        'U' => Ok(Point::unit_y()),
+        'D' => Ok(-Point::unit_y()),
+        'R' => Ok(Point::unit_x()),
+        'L' => Ok(-Point::unit_x()),
+        _ => Err(()),
+    }
+}
+
+fn parse_input(input: &str) -> Vec<Vector> {
     input
         .split('\n')
         .filter(|l| !l.is_empty())
         .map(|l| {
             let (direction, distance) = l.split_once(' ').unwrap();
-            let direction: Option<Direction> =
-                direction.chars().next().and_then(|c| c.try_into().ok());
-            let distance: Option<i32> = distance.parse().ok();
-            (direction, distance)
-        })
-        .filter_map(|(dir, dis)| match (dir, dis) {
-            (Some(direction), Some(distance)) => Some((direction, distance)),
-            (_, _) => None,
+            let distance = distance.parse().ok().unwrap();
+            let vector = direction
+                .chars()
+                .next()
+                .and_then(|c| parse_direction(c).ok())
+                .unwrap()
+                * distance;
+            vector
         })
         .collect()
 }
 
-fn get_tail_pos(mouvements: Vec<(Direction, i32)>, rope: &mut Rope) -> HashSet<Pos> {
-    let mut positions = HashSet::new();
+fn get_tail_pos(mouvements: &Vec<Vector>, rope: &mut Rope) -> BTreeSet<Point> {
+    let mut positions = BTreeSet::new();
     positions.insert(*rope.get_tail().unwrap());
 
-    for (direction, distance) in mouvements {
-        for pos_tail in rope.move_head(direction, distance) {
+    for vector in mouvements {
+        for pos_tail in rope.move_head(*vector) {
             positions.insert(pos_tail);
         }
         // print_debug_pos(&positions);
@@ -156,18 +136,18 @@ fn get_tail_pos(mouvements: Vec<(Direction, i32)>, rope: &mut Rope) -> HashSet<P
 pub fn puzzle_1(input: &str) -> String {
     let mouvements = parse_input(input);
 
-    let mut rope = Rope::new(2, Pos { x: 0, y: 0 });
+    let mut rope = Rope::new(2, Point { x: 0, y: 0 });
 
-    let positions = get_tail_pos(mouvements, &mut rope);
+    let positions = get_tail_pos(&mouvements, &mut rope);
     positions.len().to_string()
 }
 
 pub fn puzzle_2(input: &str) -> String {
     let mouvements = parse_input(input);
 
-    let mut rope = Rope::new(10, Pos { x: 0, y: 0 });
+    let mut rope = Rope::new(10, Point { x: 0, y: 0 });
 
-    let positions = get_tail_pos(mouvements, &mut rope);
+    let positions = get_tail_pos(&mouvements, &mut rope);
     positions.len().to_string()
 }
 
@@ -187,11 +167,11 @@ U 20";
     #[test]
     fn test_move_head_and_tail() {
         let mut rope = Rope {
-            knots: vec![Pos { x: 3, y: 3 }, Pos { x: 2, y: 2 }],
+            knots: vec![Point { x: 3, y: 3 }, Point { x: 2, y: 2 }],
         };
-        let tail_pos = rope.move_head(Direction::Up, 1);
+        let tail_pos = rope.move_head(Vector::unit_y());
         assert_eq!(tail_pos.len(), 1);
-        assert_eq!(rope.get_tail().unwrap().clone(), Pos { x: 3, y: 3 });
+        assert_eq!(rope.get_tail().unwrap().clone(), Point { x: 3, y: 3 });
     }
 
     #[test]
@@ -199,7 +179,7 @@ U 20";
         let input = "R 4\nU 4\n";
         assert_eq!(
             parse_input(input),
-            vec![(Direction::Right, 4), (Direction::Up, 4)]
+            vec![Vector::unit_x() * 4, Vector::unit_y() * 4]
         );
     }
 

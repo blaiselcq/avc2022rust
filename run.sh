@@ -6,8 +6,9 @@ function get_input() {
   local -r year=$(printf "%d" "$1");
   local -r day=$(printf "%d" "$2");
 
+  local -r scriptdir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
   local session_cookie
-  session_cookie=$(cat .session)
+  session_cookie=$(cat "$scriptdir"/.session)
 
   local output
   output=$(curl "https://adventofcode.com/$year/day/$day/input"\

@@ -30,14 +30,13 @@ fn parse_input(input: &str) -> Vec<Line> {
 }
 
 fn is_aligned_with_grid(line: &Line) -> bool {
-    return line.start.x == line.end.x || line.start.y == line.end.y;
+    line.start.x == line.end.x || line.start.y == line.end.y
 }
 
 fn intersect_map(input: &Vec<Line>) -> BTreeMap<Point, usize> {
     let mut res = BTreeMap::new();
     for line in input {
         for p in line.into_iter() {
-            // dbg!((line.start, p));
             res.entry(p).and_modify(|c| *c += 1).or_insert(1);
         }
     }
@@ -48,7 +47,7 @@ fn intersect_map(input: &Vec<Line>) -> BTreeMap<Point, usize> {
 pub fn puzzle_1(input: &str) -> String {
     let input = parse_input(input)
         .into_iter()
-        .filter(|line| is_aligned_with_grid(line))
+        .filter(is_aligned_with_grid)
         .collect();
     let intersections = intersect_map(&input);
 
